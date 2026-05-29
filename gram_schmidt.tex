@@ -1,0 +1,1544 @@
+\documentclass{beamer}
+
+\usetheme{Madrid}
+
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathmorphing}
+
+% Cor personalizada
+\definecolor{mygreen}{RGB}{0,120,60}
+
+% Aplicando cores e contrastes corretamente
+\setbeamercolor{structure}{fg=mygreen}
+\setbeamercolor{palette primary}{bg=mygreen, fg=white}
+\setbeamercolor{palette secondary}{bg=mygreen, fg=white}
+\setbeamercolor{palette tertiary}{bg=mygreen, fg=white}
+\setbeamercolor{frametitle}{bg=mygreen, fg=white}
+\setbeamercolor{title}{bg=mygreen, fg=white} 
+\setbeamercolor{subtitle}{fg=white} 
+\setbeamercolor{title in head/foot}{bg=mygreen, fg=white}
+
+% Remove a barra inferior pesada do tema Madrid e deixa apenas o número do slide
+\setbeamertemplate{footline}{%
+  \hfill%
+  \usebeamercolor[fg]{black}%
+  \small\insertframenumber%
+  \hspace*{3mm}\vskip3mm%
+}
+\setbeamertemplate{navigation symbols}{} 
+
+% ==========================================
+% ORGANIZAÇÃO DOS METADADOS
+% ==========================================
+\title{Processo de Gram-Schmidt}
+\subtitle{Projeto Integrador na Extensão -- Ciência da Computação} 
+\author{
+João Daniel \\
+Kelvin Krauss \\
+Sofia Effting \\
+Vinicius Vincent \\
+}
+\institute{Instituto Federal Catarinense - Campus Blumenau}
+\date{29 de maio de 2026}
+
+\begin{document}
+
+% Slide 1 - Capa
+\begin{frame}
+\titlepage
+\end{frame}
+
+% --- PARTE 1: FUNDAMENTOS MATEMÁTICOS ---
+\begin{frame}{Conceitos introdutórios}
+
+% fundo cinza claro
+\setbeamercolor{background canvas}{bg=gray!15}
+
+
+\vspace{0.5cm}
+
+% lista
+\begin{itemize}
+    \item Termos Utilizados
+    \item O que é um Vetor?
+    \item Definição de Ortogonalidade
+    \item Operações Necessárias
+    \item Regras para aplicação do GS
+\end{itemize}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Termos Utilizados}
+
+% fundo cinza
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\begin{itemize}
+
+    \item \textbf{Nomes dos vetores}
+    \begin{itemize}
+        \item $v$: vetores originais (entrada)
+        \item $u$: vetores resultantes (saída)
+    \end{itemize}
+
+    \item \textbf{Projeção}
+    \begin{itemize}
+        \item Projeção é a componente de um vetor na direção de outro vetor.
+    \end{itemize}
+    
+    \item \textbf{Número escalar}
+    \begin{itemize}
+        \item Um número escalar é um número que representa apenas uma quantidade (magnitude), sem direção.
+    \end{itemize}
+
+    \item \textbf{Espaço vetorial}
+    \begin{itemize}
+        \item É um conjunto de vetores, que podem ser somados entre si e multiplicados por números (chamados de escalares).
+    \end{itemize}
+
+\end{itemize}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{O que é um Vetor?}
+
+% fundo cinza claro
+\setbeamercolor{background canvas}{bg=gray!15}
+
+% conteúdo
+\begin{itemize}
+    \item Um vetor é uma grandeza que possui direção e magnitude, podendo ser representado graficamente como uma seta no plano.
+    \item Ele pode existir em qualquer espaço, exemplos são:
+    \begin{itemize}
+        \item 2D: (x, y)
+        \item 3D: (x, y, z)
+    \end{itemize}
+    \item Para dimensões superiores a 3 não é possível visualiza-los
+\end{itemize}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Definição de Ortogonalidade}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item Ortogonalidade generaliza o conceito de perpendicularidade
+    \item Perpendicularidade entre vetores ocorre quando o angulo entre eles é reto, ou seja, 90° 
+    \item Essa generalização amplia a ideia de perpendicularidade, transformando-a no conceito mais abrangente de ortogonalidade. 
+    \item O qual determina que, em espaços vetoriais de qualquer dimensão, dois vetores $u$ e $v$ são ortogonais se o seu produto interno (escalar) for nulo, ou seja:
+    \begin{itemize}
+        \item $\langle u, v \rangle = 0$
+    \end{itemize}
+\end{itemize}
+
+\vspace{0.5cm}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Definição de Ortogonalidade}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\begin{itemize}
+    
+    \item Geometricamente:
+    \begin{itemize}
+        \item Formam um ângulo de 90°
+        \item Não possuem projeção um sobre o outro
+    \end{itemize}
+\end{itemize}
+
+\vspace{0.8cm}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7]
+
+% Eixos opcionais
+\draw[->, gray] (-0.5,0) -- (4,0);
+\draw[->, gray] (0,-0.5) -- (0,4);
+
+% Vetor u
+\draw[->, thick, blue] (0,0) -- (3,0)
+node[below right] {$\vec{u}$};
+
+% Vetor v
+\draw[->, thick, red] (0,0) -- (0,3)
+node[above left] {$\vec{v}$};
+
+% Marca do ângulo reto
+\draw (0.25,0) -- (0.25,0.25) -- (0,0.25);
+
+% Texto 90 graus
+\node at (0.7,0.7) {$90^\circ$};
+
+\end{tikzpicture}
+\end{center}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Operações Necessárias}
+
+% fundo cinza
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+
+\item \textbf{Produto escalar}
+\begin{itemize}
+    \item Gera um número escalar 
+    \item Multiplica os elementos das coordenadas correspondentes e soma
+    \item Exemplo: $\langle (2,3),(1,4) \rangle = 14$
+\end{itemize}
+
+\vspace{0.4cm}
+
+\item \textbf{Subtração ou Soma de vetores}
+\begin{itemize}
+    \item Gera um vetor
+    \item Ela faz a subtração ou soma elemento a elemento
+    \item Exemplo: $(1,3) - (0,2) = (1,1)$, $(1,3) + (0,2) = (1,5)$
+\end{itemize}
+
+\vspace{0.4cm}
+
+\item \textbf{Multiplicação de vetores por escalar}
+\begin{itemize}
+    \item Gera um vetor
+    \item Multiplicação do escalar por todos os elementos do vetor
+    \item Exemplo: $(1,3) * 2 = (2,6)$
+\end{itemize}
+
+\end{itemize}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Regras para aplicação do GS}
+
+% fundo cinza
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+
+\item \textbf{Vetores precisam ser independentes}
+\begin{itemize}
+    \item Um não pode ser formado a partir do outro
+    \item Exemplo: $v_1 = (1,0)$ e $v_2 = (2,0)$
+    \item Não pode ser usado pois $v_2 = 2v_1$
+    \item Isso gera $u_2 = (0,0)$ no processo
+\end{itemize}
+
+\vspace{0.4cm}
+
+\item \textbf{Vetores precisam ter a mesma dimensão}
+\begin{itemize}
+    \item Não é válido misturar dimensões diferentes
+    \item Exemplo: $v_1 = (4,2)$ e $v_2 = (1,0,2)$
+\end{itemize}
+
+\vspace{0.4cm}
+
+\item \textbf{A ordem dos vetores importa}
+\begin{itemize}
+    \item Resultados podem ser diferentes
+    \item Mas todos continuam corretos
+    %, pois os vetores finais permanecem ortogonais entre si, geram o mesmo subespaço vetorial e a base obtida ainda representa corretamente o espaço original
+\end{itemize}
+
+\end{itemize}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Produto Escalar}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item O resultado é um número (valor escalar)
+    \item Multiplicamos os elementos correspondentes dos vetores
+    \item Em seguida, somamos os resultados dessas multiplicações
+    \item Exemplo geral: $\langle (x_1, y_1), (x_2, y_2) \rangle = x_1x_2 + y_1y_2$
+\end{itemize}
+
+\vspace{0.5cm}
+
+\[
+\langle u, v \rangle = (x_1 \cdot x_2) + (y_1 \cdot y_2)
+\]
+
+\vspace{0.5cm}
+
+\textbf{Exemplo:}
+\[
+\langle (2,3), (1,4) \rangle = (2 \cdot 1) + (3 \cdot 4) = 2 + 12 = 14
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Subtração de Vetores}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item O resultado é um vetor
+    \item Subtraímos os elementos correspondentes dos vetores
+    \item Cada posição é calculada separadamente
+    \item Exemplo geral: $(x_1, y_1) - (x_2, y_2) = (x_1 - x_2, y_1 - y_2)$
+\end{itemize}
+
+\vspace{0.5cm}
+
+\[
+(x_1, y_1) - (x_2, y_2) = (x_1 - x_2, y_1 - y_2)
+\]
+
+\vspace{0.5cm}
+
+\textbf{Exemplo:}
+\[
+(1,3) - (0,2) = (1-0, 3-2) = (1,1)
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Soma de Vetores}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item O resultado é um vetor
+    \item Somamos os elementos correspondentes dos vetores
+    \item Cada posição é calculada separadamente
+    \item Exemplo geral: $(x_1, y_1) + (x_2, y_2) = (x_1 + x_2, y_1 + y_2)$
+\end{itemize}
+
+\vspace{0.5cm}
+
+\[
+(x_1, y_1) + (x_2, y_2) = (x_1 + x_2, y_1 + y_2)
+\]
+
+\vspace{0.5cm}
+
+\textbf{Exemplo:}
+\[
+(1,3) + (0,2) = (1+0, 3+2) = (1,5)
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Multiplicação de escalares por vetor}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item O resultado é um vetor
+    \item Multiplicamos os elementos correspondentes dos vetores pelo escalar
+    \item Cada posição é calculada separadamente
+    \item Exemplo geral: $a * (x_1, x_2, \cdots,x_n)  = (ax_1, ax_2, \cdots,ax_n)$
+\end{itemize}
+
+\vspace{0.5cm}
+
+\textbf{Exemplo:}
+\[
+4 * (0,2) = (4 \cdot 0, 4 \cdot 2) = (0,8)
+\]
+
+\end{frame}
+%-----------------------------------
+ % --- PARTE 1: FUNDAMENTOS MATEMÁTICOS ---
+
+\begin{frame}{Introdução ao Processo de Gram-Schmidt}
+\begin{itemize}
+    \item \textbf{O que é?} Um algoritmo para ortogonalizar um conjunto de vetores em um espaço com produto interno.
+    \item \textbf{Objetivo:} Transformar uma base qualquer $V$ em uma base ortogonal $U$.
+    \item \textbf{Por que importa?} Bases ortogonais são mais simples.
+\end{itemize}
+\end{frame}
+%----------------------------------
+\begin{frame}{Fórmula da Projeção}
+A projeção ortogonal de um vetor $v$ sobre um vetor $u$ é dada por:
+\[
+\text{proj}_{u}(v)= \frac {\langle v, u\rangle}{\langle u, u\rangle}u
+\]
+Para obter o vetor puramente ortogonal, subtraímos a projeção do vetor original:
+\[
+v_{\perp}=v-\text{proj}_{u}(v)
+\]
+Essa operação é o núcleo iterativo do processo de Gram-Schmidt.
+\end{frame}
+%-----------------------------------
+\begin{frame}{Generalização Matemática}
+Para um conjunto de vetores linearmente independentes $v_1, v_2, \dots, v_k$:
+\[
+u_1 = v_1
+\]
+\[
+u_2 = v_2 - \text{proj}_{u_1}(v_2)
+\]
+\[
+u_3 = v_3 - \text{proj}_{u_1}(v_3) - \text{proj}_{u_2}(v_3)
+\]
+\[
+u_k = v_k - \sum_{j=1}^{k-1} \text{proj}_{u_j}(v_k)
+\]
+Cada passo remove todas as componentes paralelas aos vetores já processados.
+\end{frame}
+%-----------------------------------
+\begin{frame}{Somatório (Sigma)}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+\[
+u_k = v_k - \sum_{j=1}^{k-1} \mathrm{proj}_{u_j}(v_k)
+\]
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item $\sum$ é chamado de \textbf{somatório} (letra grega Sigma)
+    \item Ele representa a soma de todas as operações que aconteceram do primeiro vetor ($j=1$) até o vetor imediatamente anterior ao atual ($k-1$).
+\end{itemize}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item $j=1$ → início da soma 
+    \item $k-1$ → fim da soma 
+\end{itemize}
+
+\vspace{0.5cm}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Como o somatório funciona}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+Expandindo o somatório:
+
+\[
+\sum_{j=1}^{k-1} \mathrm{proj}_{u_j}(v_k)
+=
+\mathrm{proj}_{u_1}(v_k)
++
+\mathrm{proj}_{u_2}(v_k)
++
+\cdots
++
+\mathrm{proj}_{u_{k-1}}(v_k)
+\]
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item Calculamos cada projeção separadamente
+    \item Depois somamos todas elas
+\end{itemize}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item No final:
+    \begin{itemize}
+        \item subtraímos essa soma de $v_k$
+        \item removemos todas as direções anteriores
+    \end{itemize}
+\end{itemize}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Construção da Fórmula da Projeção}
+Queremos construir a projeção de $\vec{v}_2$ sobre $\vec{v}_1$:
+\[
+\mathrm{proj}_{\vec{v}_1}(\vec{v}_2)
+\]
+
+Vamos começar montando o círculo trigonométrico padrão: 
+\end{frame}
+
+%-----------------------------------
+%========================================
+% SLIDE 1 — Círculo trigonométrico
+%========================================
+\begin{frame}{Construção geométrica no círculo trigonométrico}
+
+\centering
+
+\begin{tikzpicture}[scale=1.2]
+
+% círculo trigonométrico
+\draw[thick] (0,0) circle (2);
+
+% eixos
+\draw[->] (-2.5,0) -- (2.5,0);
+\draw[->] (0,-2.5) -- (0,2.5);
+
+\end{tikzpicture}
+
+\vspace{0.5cm}
+
+\centering
+1. Círculo trigonométrico
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Construção da Fórmula da Projeção}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.7cm}
+
+Depois vamos desenhar um vetor $\vec{v}_2$ partindo da origem até a borda do círculo.
+
+\vspace{0.4cm}
+
+Esse vetor forma um ângulo $\theta$ (theta) com o vetor $\vec{v}_1$, que está localizado no eixo $x$.
+
+\vspace{0.4cm}
+Por ultimo, iremos desenhar uma linha descendo reto da ponta do $\vec{v}_2$ até o chão, assim acabamos de montar um Triângulo Retângulo.
+\vspace{0.4cm}
+
+\end{frame}
+%-----------------------------------
+%========================================
+% SLIDE 2 — Vetores com mesma origem
+%========================================
+\begin{frame}{Construção geométrica no círculo trigonométrico}
+
+\centering
+
+\begin{tikzpicture}[scale=1.2]
+
+% círculo trigonométrico
+\draw[thick] (0,0) circle (2);
+
+% eixos
+\draw[->] (-2.5,0) -- (2.5,0);
+\draw[->] (0,-2.5) -- (0,2.5);
+
+% pontos
+\coordinate (O) at (0,0);
+\coordinate (V1) at (2,0);
+\coordinate (V2) at (1.2,1.6);
+
+% vetor horizontal
+\draw[->, thick, blue] (O) -- (V1)
+node[below right] {$\vec{v}_1$};
+
+% vetor inclinado
+\draw[->, thick, red] (O) -- (V2)
+node[above right] {$\vec{v}_2$};
+
+\end{tikzpicture}
+
+\vspace{0.5cm}
+
+\centering
+2. Vetores com mesma origem
+
+\end{frame}
+%========================================
+% SLIDE 3 — Vetores + ângulo
+%========================================
+\begin{frame}{Construção geométrica no círculo trigonométrico}
+
+\centering
+
+\begin{tikzpicture}[scale=1.2]
+
+% círculo trigonométrico
+\draw[thick] (0,0) circle (2);
+
+% eixos
+\draw[->] (-2.5,0) -- (2.5,0);
+\draw[->] (0,-2.5) -- (0,2.5);
+
+% pontos
+\coordinate (O) at (0,0);
+\coordinate (V1) at (2,0);
+\coordinate (V2) at (1.2,1.6);
+
+% vetor horizontal
+\draw[->, thick, blue] (O) -- (V1)
+node[below right] {$\vec{v}_1$};
+
+% vetor inclinado
+\draw[->, thick, red] (O) -- (V2)
+node[above right] {$\vec{v}_2$};
+
+% arco do ângulo
+\draw[thick]
+(0.7,0)
+arc[start angle=0,end angle=53,radius=0.7];
+
+% theta
+\node at (0.9,0.35) {$\theta$};
+
+\end{tikzpicture}
+
+\vspace{0.5cm}
+
+\centering
+3. Vetores + ângulo
+
+\end{frame}
+
+
+%========================================
+% SLIDE 4 — Projeção horizontal
+%========================================
+\begin{frame}{Construção geométrica no círculo trigonométrico}
+
+\centering
+
+\begin{tikzpicture}[scale=1.2]
+
+% círculo trigonométrico
+\draw[thick] (0,0) circle (2);
+
+% eixos
+\draw[->] (-2.5,0) -- (2.5,0);
+\draw[->] (0,-2.5) -- (0,2.5);
+
+% pontos
+\coordinate (O) at (0,0);
+\coordinate (V1) at (2,0);
+\coordinate (V2) at (1.2,1.6);
+\coordinate (P) at (1.2,0);
+
+% vetor horizontal
+\draw[->, thick, blue] (O) -- (V1)
+node[below right] {$\vec{v}_1$};
+
+% vetor inclinado
+\draw[->, thick, red] (O) -- (V2)
+node[above right] {$\vec{v}_2$};
+
+% projeção horizontal
+\draw[dashed] (V2) -- (P);
+
+% zig-zag verde na projeção
+\draw[
+    green!60!black,
+    thick,
+    decorate,
+    decoration={
+        zigzag,
+        segment length=4pt,
+        amplitude=1pt
+    }
+] (O) -- (P);
+
+% triângulo
+\draw[thin] (O) -- (V2) -- (P) -- cycle;
+
+% arco do ângulo
+\draw[thick]
+(0.7,0)
+arc[start angle=0,end angle=53,radius=0.7];
+
+% theta
+\node at (0.9,0.35) {$\theta$};
+
+% ângulo reto
+\draw (P) rectangle +(0.12,0.12);
+
+\end{tikzpicture}
+
+\vspace{0.5cm}
+
+\centering
+4. Projeção horizontal
+
+\end{frame}
+
+%-----------------------------------
+\begin{frame}{Construção da Fórmula da Projeção}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.7cm}
+
+Com o triangulo retângulo em mãos, nosso objetivo agora é descobrir o tamanho da "sombra" feita pelo vetor v2 no vetor v1.
+
+\vspace{0.4cm}
+
+Para descobrir a medida dessa sombra, utilizamos o cosseno de $\theta$, pois ele estabelece a relação exata entre o tamanho do vetor original e a base do triângulo.
+\vspace{0.4cm}
+
+\vspace{0.4cm}
+
+\end{frame}
+
+%-----------------------------------
+\begin{frame}{Interpretação geométrica}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.4cm}
+
+\begin{center}
+
+\begin{tikzpicture}[scale=0.9]
+
+% =====================================
+% Fórmula do cosseno (lado esquerdo)
+% =====================================
+
+\node at (-4.2,1.5) {
+\Large
+$
+\cos(\theta)
+=
+\frac{\text{cateto adjacente}}
+{\text{hipotenusa}}
+$
+};
+
+% =====================================
+% Origem
+% =====================================
+
+\coordinate (O) at (0,0);
+
+% Vetores
+\coordinate (V1) at (4.8,0);
+\coordinate (V2) at (2.7,3.1);
+
+% Projeção
+\coordinate (P) at (2.7,0);
+
+% =====================================
+% Vetor v1 em azul
+% =====================================
+
+\draw[->, thick, blue] (O) -- (V1)
+node[below right] {$\vec{v}_1$};
+
+% =====================================
+% Vetor v2 em vermelho
+% =====================================
+
+\draw[->, thick, red] (O) -- (V2)
+node[above right] {$\vec{v}_2$};
+
+% =====================================
+% zig-zag verde na projeção
+% =====================================
+
+\draw[
+    green!60!black,
+    thick,
+    decorate,
+    decoration={
+        zigzag,
+        segment length=4pt,
+        amplitude=1pt
+    }
+] (O) -- (P);
+
+% =====================================
+% Altura da projeção
+% =====================================
+
+\draw[dashed] (V2) -- (P);
+
+% =====================================
+% Triângulo
+% =====================================
+
+\draw[thin] (O) -- (V2) -- (P) -- cycle;
+
+% =====================================
+% Ângulo reto
+% =====================================
+
+\draw (P) rectangle +(0.20,0.20);
+
+% =====================================
+% Arco do ângulo
+% =====================================
+
+\draw[thick]
+(0.8,0)
+arc[start angle=0,end angle=49,radius=0.8];
+
+% =====================================
+% Texto cos(theta)
+% =====================================
+
+\node at (1.38,0.45) {$\cos(\theta)$};
+
+% =====================================
+% Hipotenusa
+% =====================================
+
+\node[above left] at (1.55,1.75)
+{\small Hipotenusa};
+
+% =====================================
+% Cateto adjacente
+% =====================================
+
+\node[below] at (1.35,-0.3)
+{\small Cateto adjacente};
+
+% =====================================
+% Cateto oposto
+% =====================================
+
+\node[right] at (2.70,1.5)
+{\small Cateto oposto};
+
+\end{tikzpicture}
+
+\end{center}
+
+\end{frame}
+%-----------------------------------
+
+\begin{frame}{Cosseno no círculo trigonométrico}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+Como $\vec{v}_2$ está no círculo trigonométrico:
+
+\begin{itemize}
+    \item A hipotenusa possui tamanho $1$
+    \item Logo:
+\end{itemize}
+
+\vspace{0.5cm}
+
+\[
+\cos(\theta)
+=
+\frac{\text{cateto adjacente}}
+{\text{hipotenusa}}
+\quad
+\Longrightarrow
+\quad
+\cos(\theta)
+=
+\frac{\text{cateto adjacente}}{1}
+\]
+\vspace{0.5cm}
+
+Portanto:
+
+\[
+\boxed{
+\text{cateto adjacente} = \cos(\theta)
+}
+\]
+
+\vspace{0.4cm}
+
+\begin{itemize}
+    \item O cosseno representa a projeção horizontal do vetor
+\end{itemize}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Vetores com tamanho qualquer}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+
+    \item Se o vetor $\vec{v}_2$ for maior ou menor que o círculo trigonométrico
+
+    \item Basta multiplicar o cosseno pelo tamanho do vetor
+
+\end{itemize}
+
+\vspace{0.5cm}
+
+\[
+\boxed{
+\text{cateto adjacente}
+=
+|\vec{v}_2| \cos(\theta)
+}
+\]
+
+\vspace{0.4cm}
+
+\end{frame}
+
+%-----------------------------------
+\begin{frame}{Usando produto escalar}
+
+Sabemos que a definição geométrica do produto interno (ou escalar) entre dois vetores $\vec{v}_2$ e $\vec{v}_1$ é:
+
+\[
+ \langle \vec{v}_2 , \vec{v}_1 \rangle = |\vec{v}_2||\vec{v}_1|\cos\theta
+\]
+\end{frame}
+%-----------------------------------
+\begin{frame}{Isolando o termo}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+Partimos da fórmula:
+
+\[
+\langle \vec{v}_2 , \vec{v}_1 \rangle = |\vec{v}_2||\vec{v}_1|\cos\theta
+\]
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item Queremos isolar $|\vec{v}_2|\cos\theta$
+    \item Para isso, dividimos ambos os lados por $|\vec{v}_1|$
+\end{itemize}
+
+\vspace{0.5cm}
+
+\[
+\frac{\langle \vec{v}_2 , \vec{v}_1 \rangle}{|\vec{v}_1|}
+=
+\frac{|\vec{v}_2||\vec{v}_1|\cos\theta}{|\vec{v}_1|}
+\]
+
+
+\begin{itemize}
+    \item Simplificando $|\vec{v}_1|$:
+\end{itemize}
+
+
+\[
+|\vec{v}_2|\cos\theta =
+\frac{\langle \vec{v}_2 , \vec{v}_1 \rangle}{|\vec{v}_1|}
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Transformando a projeção em vetor}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+Até agora, calculamos apenas o comprimento da projeção.
+
+\begin{itemize}
+    \item Mas queremos que a projeção seja um vetor
+    \item Esse vetor deve apontar na mesma direção de $\vec{v}_1$
+\end{itemize}
+
+
+Para isso:
+
+\begin{itemize}
+    \item Pegamos o tamanho encontrado no passo anterior
+    \item Multiplicamos por um vetor de tamanho $1$
+    \item Esse vetor aponta na direção de $\vec{v}_1$
+\end{itemize}
+
+\vspace{0.6cm}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Transformando a projeção em vetor (Parte 2)}
+Esse vetor especial é chamado de:
+
+\[
+\boxed{\text{Versor}} 
+\]
+
+\vspace{0.5cm}
+
+O versor de $\vec{v}_1$ é dado por:
+
+\[
+\hat{v}_1 = \frac{\vec{v}_1}{|\vec{v}_1|}
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Construindo a projeção}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+Agora juntamos:
+
+\begin{itemize}
+    \item Comprimento da projeção
+    \item Direção da projeção
+\end{itemize}
+
+\vspace{0.5cm}
+
+\[
+\mathrm{proj}_{\vec{v}_1}(\vec{v}_2)
+=
+(|\vec{v}_2| \cos\theta)\hat{v}_1
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Interpretação}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item $(|\vec{v}_2| \cos\theta)$ → tamanho da projeção
+    \item $\hat{v}_1$ → direção da projeção
+    \item Multiplicando os dois → obtemos um vetor
+\end{itemize}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Substituição (parte 1)}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+Começamos com:
+
+\[
+\mathrm{proj}_{\vec{v}_1}(\vec{v}_2)
+=
+(|\vec{v}_2|\cos\theta)\hat{v}_1
+\]
+
+\vspace{0.5cm}
+
+Substituímos o vetor unitário:
+
+\[
+\hat{v}_1 = \frac{\vec{v}_1}{|\vec{v}_1|}
+\]
+
+\vspace{0.5cm}
+
+\[
+\mathrm{proj}_{\vec{v}_1}(\vec{v}_2)
+=
+(|\vec{v}_2|\cos\theta)
+\left(\frac{\vec{v}_1}{|\vec{v}_1|}\right)
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Substituição (parte 2)}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+Agora usamos:
+
+\[
+|\vec{v}_2|\cos\theta =
+\frac{\langle \vec{v}_2 , \vec{v}_1 \rangle}{|\vec{v}_1|}
+\]
+
+\vspace{0.5cm}
+
+Substituindo na expressão:
+
+\[
+\mathrm{proj}_{\vec{v}_1}(\vec{v}_2)
+=
+\left(\frac{\langle \vec{v}_2 , \vec{v}_1 \rangle}{|\vec{v}_1|}\right)
+\left(\frac{\vec{v}_1}{|\vec{v}_1|}\right)
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Multiplicação das frações}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+Partimos de:
+
+\[
+\left(\frac{\langle \vec{v}_2 , \vec{v}_1 \rangle}{|\vec{v}_1|}\right)
+\left(\frac{\vec{v}_1}{|\vec{v}_1|}\right)
+\]
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item Multiplicamos numerador com numerador
+    \item Multiplicamos denominador com denominador
+\end{itemize}
+
+\vspace{0.5cm}
+
+\[
+=
+\frac{(\langle \vec{v}_2 , \vec{v}_1 \rangle)\,\vec{v}_1}{|\vec{v}_1|\cdot|\vec{v}_1|}
+\]
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item O produto escalar é um número (escalar)
+    \item Ele multiplica o vetor $\vec{v}_1$
+\end{itemize}
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Simplificação}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+Continuando:
+
+\[
+\frac{(\langle \vec{v}_2 , \vec{v}_1 \rangle)\,\vec{v}_1}{|\vec{v}_1|\cdot|\vec{v}_1|}
+\]
+
+\vspace{0.5cm}
+
+
+Sabemos que:
+
+
+\vspace{0.3cm}
+
+\[
+|\vec{v}_1|\cdot|\vec{v}_1| = \langle \vec{v}_1 , \vec{v}_1 \rangle
+\]
+
+
+\vspace{0.5cm}
+
+Substituindo no denominador:
+
+\[
+=
+\frac{(\langle \vec{v}_2 , \vec{v}_1 \rangle)\,\vec{v}_1}{\langle \vec{v}_1 , \vec{v}_1 \rangle}
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Reorganizando a expressão}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+Temos:
+
+\[
+\frac{(\langle \vec{v}_2 , \vec{v}_1 \rangle)\,\vec{v}_1}{\langle \vec{v}_1 , \vec{v}_1 \rangle}
+\]
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item $\langle \vec{v}_2 , \vec{v}_1 \rangle$ é um número (escalar)
+    \item $\langle \vec{v}_1 , \vec{v}_1 \rangle$ também é um número
+\end{itemize}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item Ou seja, temos:
+\end{itemize}
+
+\vspace{0.3cm}
+
+\[
+\frac{\text{escalar} \cdot \vec{v}_1}{\text{escalar}}
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Regra algébrica}
+
+\setbeamercolor{background canvas}{bg=gray!15}
+
+\vspace{0.5cm}
+
+Usamos a propriedade:
+
+\[
+\frac{a \cdot \vec{v}}{b} = \left(\frac{a}{b}\right)\vec{v}
+\quad \text{(com $a,b$ escalares)}
+\]
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item Escalares seguem as regras normais da divisão
+    \item Podemos dividir $a$ por $b$ primeiro
+    \item O resultado continua sendo um escalar
+\end{itemize}
+
+\vspace{0.5cm}
+
+\begin{itemize}
+    \item Esse escalar então multiplica o vetor
+\end{itemize}
+
+\vspace{0.5cm}
+
+Aplicando:
+
+\[
+\text{proj}_{u}(v)= \frac {\langle v, u\rangle}{\langle u, u\rangle}u
+=
+\left(\frac{\langle \vec{v}_2 , \vec{v}_1 \rangle}{\langle \vec{v}_1, \vec{v}_1 \rangle}\right)\vec{v}_1
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Conclusão}
+
+A fórmula da projeção vem diretamente de:
+\begin{itemize}
+    \item triângulo retângulo
+    \item trigonometria
+    \item produto escalar
+\end{itemize}
+
+\end{frame}
+\begin{frame}{Exemplo 1: Duas Dimensões}
+Considere a base em $\mathbb{R}^2$:
+\[
+v_1=(1,0), \quad v_2=(1,1)
+\]
+O primeiro vetor da nossa nova base ortogonal é simplesmente o primeiro vetor original:
+\[
+u_1 = v_1 = (1,0)
+\]
+\end{frame}
+%-----------------------------------
+\begin{frame}{Exemplo 1: O Produto Escalar}
+Aplicando a fórmula da projeção para encontrar $u_2$:
+\[
+\text{proj}_{u_1}(v_2)
+=
+\frac{\langle v_2, u_1 \rangle}
+{\langle u_1, u_1 \rangle}
+u_1
+\]
+Calculando os produtos escalares:
+\[
+\langle v_2, u_1 \rangle
+=
+\langle (1,1) \cdot (1,0) \rangle
+=
+1\cdot1 + 1\cdot0
+=
+1
+\]
+
+\[
+\langle u_1 , u_1 \rangle
+=
+\langle (1,0) \cdot (1,0) \rangle
+=
+1
+\]
+\end{frame}
+
+\begin{frame}{Exemplo 1: Conclusão}
+Substituindo na fórmula da projeção:
+\[
+\text{proj}_{u_1}(v_2) = \frac{1}{1}(1,0) = (1,0)
+\]
+Agora removemos a projeção do vetor original $v_2$:
+\[
+u_2 = (1,1) - (1,0)
+\]
+\[
+u_2 = (0,1)
+\]
+Assim, a nova base ortogonal é formada por $u_1=(1,0)$ e $u_2=(0,1)$.
+\end{frame}
+
+\begin{frame}{Exemplo 2: Três Dimensões}
+Considere os seguintes vetores em $\mathbb{R}^3$:
+\[
+v_1=(1,1,0)
+\]
+\[
+v_2=(1,0,1)
+\]
+\[
+v_3=(0,1,1)
+\]
+Definimos imediatamente o primeiro vetor:
+\[
+u_1=v_1=(1,1,0)
+\]
+\end{frame}
+%-----------------------------------
+%-----------------------------------
+\begin{frame}{Exemplo 2: Calculando $u_2$}
+
+Projeção de $v_2$ sobre $u_1$:
+
+\[
+\langle v_2, u_1 \rangle
+=
+\langle (1,0,1) \cdot (1,1,0) \rangle
+=
+1
+\]
+
+\[
+\langle u_1 \cdot u_1 \rangle
+=
+\langle (1,1,0) \cdot (1,1,0) \rangle
+=
+2
+\]
+
+\[
+\text{proj}_{u_1}(v_2)
+=
+\frac12(1,1,0)
+=
+\left(\frac12,\frac12,0\right)
+\]
+
+\[
+u_2
+=
+(1,0,1)
+-
+\left(\frac12,\frac12,0\right)
+=
+\left(\frac12,-\frac12,1\right)
+\]
+
+\end{frame}
+
+%-----------------------------------
+\begin{frame}{Exemplo 2: Projeção de $v_3$ sobre $u_1$}
+
+Para encontrar $u_3$, precisamos projetar $v_3$ sobre $u_1$ e $u_2$.
+
+\vspace{0.5cm}
+
+Primeiro, sobre $u_1$:
+
+\[
+\langle v_3, u_1 \rangle
+=
+\langle (0,1,1) \cdot (1,1,0) \rangle
+=
+1
+\]
+
+\[
+\langle u_1, u_1 \rangle
+=
+\langle (1,1,0) \cdot (1,1,0) \rangle
+=
+2
+\]
+
+\[
+\text{proj}_{u_1}(v_3)
+=
+\frac12(1,1,0)
+\]
+
+\end{frame}
+
+%-----------------------------------
+\begin{frame}{Exemplo 2: Projeção de $v_3$ sobre $u_2$}
+
+Agora, sobre $u_2$:
+
+\[
+\langle v_3, u_2 \rangle
+=
+\left\langle
+(0,1,1) \cdot
+\left(
+\frac12,
+-\frac12,
+1
+\right)
+\right\rangle
+=
+\frac12
+\]
+
+\[
+\langle u_2, u_2 \rangle
+=
+\left\langle
+\left(
+\frac12,
+-\frac12,
+1
+\right) \cdot
+\left(
+\frac12,
+-\frac12,
+1
+\right)
+\right\rangle
+=
+\frac14+\frac14+1
+=
+\frac32
+\]
+
+\[
+\text{proj}_{u_2}(v_3)
+=
+\frac{\frac12}{\frac32}
+\left(
+\frac12,
+-\frac12,
+1
+\right)
+=
+\frac13
+\left(
+\frac12,
+-\frac12,
+1
+\right)
+=
+\left(
+\frac16,
+-\frac16,
+\frac13
+\right)
+\]
+
+\end{frame}
+%-----------------------------------
+\begin{frame}{Exemplo 2: Resultado Final de $u_3$}
+Aplicando a fórmula completa para $u_3$:
+\[
+u_3 = v_3 - \text{proj}_{u_1}(v_3) - \text{proj}_{u_2}(v_3)
+\]
+\[
+u_3 = (0,1,1) - \left(\frac12,\frac12,0\right) - \left(\frac16,-\frac16,\frac13\right)
+\]
+\[
+u_3 = \left(-\frac23,\frac23,\frac23\right)
+\]
+A base $(u_1, u_2, u_3)$ agora é perfeitamente ortogonal.
+\end{frame}
+%-----------------------------------
+\begin{frame}{Visualização Computacional: GeoGebra 2D}
+Para comprovar a eficácia geométrica do algoritmo, desenvolvemos uma representação interativa no GeoGebra.
+\vspace{0.3cm}
+\begin{itemize}
+    \item \textbf{O Setup:} Vetores originais $v_1$ e $v_2$ plotados no plano cartesiano.
+    \item \textbf{A Dinâmica:} O software calcula a projeção.
+    \item \textbf{O Resultado:} O vetor ortogonal $u_2$ reage, mantendo o ângulo exato de $90^\circ$ com $u_1$.
+\end{itemize}
+\vspace{0.5cm}
+\end{frame}
+
+%-----------------------------------
+\begin{frame}{Visualização Computacional: GeoGebra 3D}
+A visualização em três dimensões expõe a complexidade de isolar componentes espaciais.
+\vspace{0.3cm}
+\begin{itemize}
+    \item \textbf{O Plano Base:} Os vetores ortogonalizados $u_1$ e $u_2$ formam um plano no espaço.
+    \item \textbf{A Projeção Dupla:} Observamos o vetor $v_3$ sendo subtraído de suas componentes paralelas ao plano $(u_1, u_2)$.
+    \item \textbf{O Vetor Normal:} O vetor $u_3$ resultante surge perfeitamente perpendicular à base formada.
+\end{itemize}
+\vspace{0.5cm}
+\end{frame}
+
+%-----------------------------------
+\begin{frame}{Do Gráfico para a Prática}
+O que o GeoGebra faz nos bastidores para renderizar essas retas ortogonais em tempo real?
+\vspace{0.3cm}
+\begin{itemize}
+    \item O motor de renderização executa iterativamente as equações de projeção que acabamos de deduzir.
+    \item Ele atualiza os cálculos a cada frame durante a interação do usuário.
+    \item Isso demonstra que o Processo de Gram-Schmidt é o alicerce fundamental de motores geométricos, o que nos leva diretamente às aplicações práticas deste conceito.
+\end{itemize}
+\end{frame}
+
+% --- PARTE 2: APLICAÇÕES PRÁTICAS ---
+
+\begin{frame}{Aplicação 1: Orientação de Câmeras Virtuais (3D)}
+Como motores gráficos (Unity, Unreal) mantêm a tela estável?
+\vspace{0.3cm}
+\begin{itemize}
+    \item A câmera virtual é guiada por três vetores: \textit{Forward} (Frente), \textit{Up} (Cima) e \textit{Right} (Direita).
+    \item Movimentos bruscos do mouse e acumulação de erros decimais fazem com que esses vetores percam seus ângulos exatos de $90^\circ$.
+    \item Se a ortogonalidade for perdida, a imagem sofre "Shearing" (distorção). 
+    \item O motor gráfico roda Gram-Schmidt silenciosamente a cada frame para re-ortogonalizar \textit{Up} e \textit{Right} em relação ao \textit{Forward}.
+\end{itemize}
+\end{frame}
+
+%-----------------------------------
+\begin{frame}{Aplicação 2: Ciência de Dados e Redundância}
+Na Inteligência Artificial, vetores representam características de um dataset.
+\vspace{0.3cm}
+\begin{itemize}
+    \item \textbf{O Problema:} Se usarmos "Número de Quartos" ($v_1$) e "Metragem Total" ($v_2$) para prever o preço de uma casa, os dados são redundantes (vetores quase paralelos).
+    \item Redundância causa instabilidade e lentidão no treinamento de Redes Neurais.
+    \item \textbf{A Solução:} Gram-Schmidt remove de $v_2$ tudo o que já é explicado por $v_1$.
+    \item O novo vetor $u_2$ representa \textbf{apenas a informação nova e independente}, otimizando o modelo de Machine Learning.
+\end{itemize}
+\end{frame}
+
+%-----------------------------------
+\begin{frame}{Resumo do Projeto Integrador}
+\begin{itemize}
+    \item \textbf{Matemática:} O algoritmo limpa as dependências direcionais entre os dados de entrada, gerando bases perfeitamente independentes.
+    \item \textbf{Computação:} É a ferramenta essencial para limpar dependências em grandes conjuntos de dados e estabilizar espaços virtuais em 3D.
+    \item \textbf{Prática:} A união entre a base teórica e as soluções aplicadas formam a espinha dorsal de diversas tecnologias do nosso dia a dia.
+\end{itemize}
+\end{frame}
+
+%-----------------------------------
+\begin{frame}{Conclusão}
+\begin{center}
+\Large Obrigado pela atenção. \\
+\vspace{0.5cm}
+Abrimos agora para dúvidas.
+\end{center}
+\end{frame}
+
+\end{document}
