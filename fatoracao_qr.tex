@@ -1,0 +1,306 @@
+\documentclass{beamer}
+
+\usetheme{Madrid}
+
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{xcolor}
+
+% Cor personalizada
+\definecolor{mygreen}{RGB}{0,120,60}
+
+% Aplicando cores e contrastes corretamente
+\setbeamercolor{structure}{fg=mygreen}
+\setbeamercolor{palette primary}{bg=mygreen, fg=white}
+\setbeamercolor{palette secondary}{bg=mygreen, fg=white}
+\setbeamercolor{palette tertiary}{bg=mygreen, fg=white}
+\setbeamercolor{frametitle}{bg=mygreen, fg=white}
+\setbeamercolor{title}{bg=mygreen, fg=white} 
+\setbeamercolor{subtitle}{fg=white} % Texto em branco sobre o fundo verde da capa
+\setbeamercolor{title in head/foot}{bg=mygreen, fg=white}
+
+% Remove a barra inferior pesada do tema Madrid e deixa apenas o número do slide simples em preto
+\setbeamertemplate{footline}{%
+  \hfill%
+  \usebeamercolor[fg]{black}%
+  \small\insertframenumber%
+  \hspace*{3mm}\vskip3mm%
+}
+\setbeamertemplate{navigation symbols}{} % Remove os ícones de navegação padrão
+
+% ==========================================
+% ORGANIZAÇÃO DOS METADADOS
+% ==========================================
+\title{Fatoração QR}
+\subtitle{Projeto Integrador na Extensão -- Ciência da Computação} 
+\author{
+João Daniel \\
+Kelvin Krauss \\
+Sofia Effting \\
+Vinicius Vincent
+}
+\institute{Instituto Federal Catarinense - Campus Blumenau}
+\date{29 de maio de 2026}
+
+\begin{document}
+
+% Slide 1 - Capa
+\begin{frame}
+\titlepage
+\end{frame}
+
+% Slide 2
+\begin{frame}{Introdução}
+\begin{itemize}
+    \item A fatoração QR é uma decomposição matricial.
+    \item Muito utilizada em Álgebra Linear Numérica.
+    \item Aplicações em computação científica e machine learning.
+    \item Baseada em matrizes ortogonais.
+\end{itemize}
+\end{frame}
+
+% Slide 3
+\begin{frame}{Objetivos}
+\begin{itemize}
+    \item Compreender a fatoração QR.
+    \item Entender sua construção.
+    \item Relacionar QR com Gram-Schmidt.
+    \item Explorar aplicações práticas.
+\end{itemize}
+\end{frame}
+
+% Slide 4
+\begin{frame}{Definição}
+Uma matriz $A$ pode ser escrita como:
+
+\[
+A = QR
+\]
+
+Onde:
+
+\begin{itemize}
+    \item $Q$ é uma matriz ortogonal.
+    \item $R$ é uma matriz triangular superior.
+\end{itemize}
+\end{frame}
+
+% Slide 5
+\begin{frame}{Matriz Ortogonal}
+Uma matriz $Q$ é ortogonal quando:
+
+\[
+Q^TQ = I
+\]
+
+Características:
+\begin{itemize}
+    \item Colunas ortogonais.
+    \item Norma igual a 1.
+    \item Fácil inversão:
+    \[
+    Q^{-1} = Q^T
+    \]
+\end{itemize}
+\end{frame}
+
+% Slide 6
+\begin{frame}{Matriz Triangular Superior}
+A matriz $R$ possui formato:
+
+\[
+R =
+\begin{bmatrix}
+* & * & * \\
+0 & * & * \\
+0 & 0 & *
+\end{bmatrix}
+\]
+
+Características:
+\begin{itemize}
+    \item Elementos abaixo da diagonal são zero.
+    \item Facilita resolução de sistemas.
+\end{itemize}
+\end{frame}
+
+% Slide 7
+\begin{frame}{Processo de Gram-Schmidt}
+Método utilizado para:
+\begin{itemize}
+    \item Transformar vetores independentes.
+    \item Gerar base ortogonal.
+    \item Construir a matriz $Q$.
+\end{itemize}
+\end{frame}
+
+% Slide 8
+\begin{frame}{Ortogonalização}
+Dados vetores:
+\[
+v_1, v_2, \dots, v_n
+\]
+
+Geramos:
+\[
+u_1, u_2, \dots, u_n
+\]
+
+com:
+\[
+u_i \perp u_j
+\]
+\end{frame}
+
+% Slide 9
+\begin{frame}{Primeiro Vetor}
+O primeiro vetor é:
+
+\[
+u_1 = v_1
+\]
+
+Normalização:
+
+\[
+q_1 = \frac{u_1}{||u_1||}
+\]
+\end{frame}
+
+% Slide 10
+\begin{frame}{Segundo Vetor}
+Removemos projeções:
+
+\[
+u_2 = v_2 - \text{proj}_{u_1}(v_2)
+\]
+
+Onde:
+
+\[
+\text{proj}_{u_1}(v_2) =
+\frac{v_2 \cdot u_1}{u_1 \cdot u_1}u_1
+\]
+\end{frame}
+
+% Slide 11
+\begin{frame}{Construção da Matriz Q}
+A matriz $Q$ é formada pelos vetores ortonormais:
+
+\[
+Q =
+\begin{bmatrix}
+| & | & | \\
+q_1 & q_2 & q_3 \\
+| & | & |
+\end{bmatrix}
+\]
+\end{frame}
+
+% Slide 12
+\begin{frame}{Construção da Matriz R}
+A matriz $R$ é calculada por:
+
+\[
+R = Q^TA
+\]
+
+Resultado:
+\begin{itemize}
+    \item Matriz triangular superior.
+    \item Coeficientes das projeções.
+\end{itemize}
+\end{frame}
+
+% Slide 13
+\begin{frame}{Exemplo Simples}
+Dada a matriz $A$:
+
+\[
+A =
+\begin{bmatrix}
+1 & 1 \\
+1 & 0
+\end{bmatrix}
+\]
+
+A fatoração $A = QR$ resulta em:
+
+\[
+Q = 
+\begin{bmatrix} 
+\frac{\sqrt{2}}{2} & \frac{\sqrt{2}}{2} \\[6pt] 
+\frac{\sqrt{2}}{2} & -\frac{\sqrt{2}}{2} 
+\end{bmatrix}
+\quad \text{e} \quad 
+R = 
+\begin{bmatrix} 
+\sqrt{2} & \frac{\sqrt{2}}{2} \\[6pt] 
+0 & \frac{\sqrt{2}}{2} 
+\end{bmatrix}
+\]
+\end{frame}
+
+% Slide 14
+\begin{frame}{Aplicações}
+\begin{itemize}
+    \item Resolução de sistemas lineares.
+    \item Computação gráfica.
+    \item Processamento de sinais.
+    \item Inteligência Artificial.
+\end{itemize}
+\end{frame}
+
+% Slide 15
+\begin{frame}{Vantagens}
+\begin{itemize}
+    \item Estabilidade numérica.
+    \item Eficiência computacional.
+    \item Facilidade algébrica.
+    \item Aplicação em grandes sistemas.
+\end{itemize}
+\end{frame}
+
+% Slide 16
+\begin{frame}{Desvantagens}
+\begin{itemize}
+    \item Alto custo computacional em matrizes grandes.
+    \item Gram-Schmidt clássico pode gerar erros numéricos.
+    \item Necessidade de precisão computacional.
+\end{itemize}
+\end{frame}
+
+% Slide 17
+\begin{frame}{QR na Computação}
+Bibliotecas utilizadas:
+\begin{itemize}
+    \item MATLAB
+    \item NumPy
+    \item SciPy
+    \item Octave
+\end{itemize}
+\end{frame}
+
+% Slide 18
+\begin{frame}{Conclusão}
+\begin{itemize}
+    \item QR é essencial em Álgebra Linear.
+    \item Possui ampla aplicação prática.
+    \item Gram-Schmidt é base da decomposição.
+    \item Muito importante para computação científica.
+\end{itemize}
+\end{frame}
+
+% Slide 19
+\begin{frame}{Obrigado!}
+\centering
+
+\Huge Dúvidas?
+
+\vspace{1cm}
+
+\Large Obrigado pela atenção!
+\end{frame}
+
+\end{document}
